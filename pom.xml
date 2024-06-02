@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.cvarela.couchbase</groupId>
+    <artifactId>demo-lite-standalone-client</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Couchbase Lite Standalone client</name>
+    <description>A simple standalone client using Couchbase Lite</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <couchbase.version>3.1.7</couchbase.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.couchbase.lite</groupId>
+            <artifactId>couchbase-lite-java</artifactId>
+            <version>${couchbase.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
