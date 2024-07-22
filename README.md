@@ -7,25 +7,25 @@ App Service.
 ## Prerequisites
 
 - Java 8 or later
-  - Couchbase Capella account
-    - If you don't have an account, you can create one [here](https://cloud.couchbase.com/signup).
-    - After creating an account, create a new Couchbase Capella App Service instance and create a new App Endpoint to get
-      the service URL.
-    - Add three App Roles to the App Endpoint: `approle-store-1`, `approle-store-2`, and `approle-store-3`.
+- Couchbase Capella account
+  - If you don't have an account, you can create one [here](https://cloud.couchbase.com/signup).
+  - After creating an account, create a new Couchbase Capella App Service instance and create a new App Endpoint to get
+    the service URL.
+  - Add three App Roles to the App Endpoint: `approle-store-1`, `approle-store-2`, and `approle-store-3`.
 
-      | Role                | Admin channels |
-      |---------------------|:--------------:|
-      | `approle-store-1`   |   `store-1`    |
-      | `approle-store-2`   |   `store-2`    |
-      | `approle-store-3`   |   `store-3`    |
+    | Role                | Admin channels |
+    |---------------------|:--------------:|
+    | `approle-store-1`   |   `store-1`    |
+    | `approle-store-2`   |   `store-2`    |
+    | `approle-store-3`   |   `store-3`    |
   
-    - Add three App Users to the App Endpoint and assign the following roles to them:
+  - Add three App Users to the App Endpoint and assign the following roles to them:
   
-      | User               |                       Roles assigned                        |
-      |--------------------|:-----------------------------------------------------------:|
-      | `appuser-store-1`  |                      `approle-store-1`                      |
-      | `appuser-store-2`  |                      `approle-store-2`                      |
-      | `appuser-store-3`  | `approle-store-1`, `approle-store-2`, and `approle-store-3` |
+    | User               |                       Roles assigned                        |
+    |--------------------|:-----------------------------------------------------------:|
+    | `appuser-store-1`  |                      `approle-store-1`                      |
+    | `appuser-store-2`  |                      `approle-store-2`                      |
+    | `appuser-store-3`  | `approle-store-1`, `approle-store-2`, and `approle-store-3` |
 
 ## Running the example
 
