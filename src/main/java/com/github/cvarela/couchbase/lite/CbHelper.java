@@ -64,6 +64,9 @@ public final class CbHelper {
                                                                         final Collection collection)
         throws URISyntaxException
     {
+        String username = properties.getProperty(REPLICATOR_USERNAME);
+        String url = properties.getProperty(REPLICATOR_URL);
+        System.out.format("Creating replicator configuration (username: %s, uri: %s) ...%n", username, url);
         return new ReplicatorConfiguration(new URLEndpoint(new URI(properties.getProperty(REPLICATOR_URL))))
             .addCollection(collection, null)
             .setContinuous(false)

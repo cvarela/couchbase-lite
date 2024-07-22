@@ -7,6 +7,7 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.DatabaseConfiguration;
 import com.couchbase.lite.ListenerToken;
 import com.couchbase.lite.Replicator;
+import com.couchbase.lite.ReplicatorActivityLevel;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -15,10 +16,12 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import static com.github.cvarela.couchbase.lite.Constants.COLLECTION_NAME;
-import static com.github.cvarela.couchbase.lite.Constants.DATABASE_NAME;
 import static com.github.cvarela.couchbase.lite.Constants.SCOPE_NAME;
+import static com.github.cvarela.couchbase.lite.Constants.STORE_ID;
 
 public class DemoLite {
+
+    private static final Object MONITOR = new Object();
 
     public static void main(String[] args) {
         try {
@@ -37,7 +40,10 @@ public class DemoLite {
 
     private void run(Properties properties) throws CouchbaseLiteException, URISyntaxException {
 
-        System.out.format("Initializing Couchbase Lite (local database: %s) ...%n", DATABASE_NAME);
+        int storeId = Integer.parseInt(properties.getProperty(STORE_ID));
+        String databaseName = "localdb-store-" + storeId;
+
+        System.out.format("Initializing Couchbase Lite (local database: %s) ...%n", databaseName);
 
         CouchbaseLite.init();
         CbHelper.configureLogs();
@@ -48,9 +54,10 @@ public class DemoLite {
         Replicator replicator = null;
         ListenerToken listenerToken = null;
 
-        try (Database database = new Database(DATABASE_NAME, dbConfig)) {
+        try (Database database = new Database(databaseName, dbConfig)) {
 
             // show all collections in the database prior to creating a new one
+            System.out.println("Collections in the database (before creating a new one):");
             System.out.println(CbHelper.printCollectionsInDatabase(database));
 
             // create a new collection in the database if it does not exist yet or get it if it does exist already
@@ -58,12 +65,14 @@ public class DemoLite {
                 properties.getProperty(COLLECTION_NAME),
                 properties.getProperty(SCOPE_NAME));
 
-            // show all collections in the database after creating a new one
-            System.out.println(CbHelper.printCollectionsInDatabase(database));
-
             // save some documents in the collection to be replicated to the remote endpoint later on (see below)
-            collection.save(ModelHelper.getIberiaAirline());
-            collection.save(ModelHelper.getVuelingAirline());
+            for (int productId = 1; productId <= 100; productId++) {
+                collection.save(ModelHelper.generateStockDocument(productId, storeId));
+            }
+
+            // show all collections in the database after creating a new one
+            System.out.println("Collections in the database (after creating a new one):");
+            System.out.println(CbHelper.printCollectionsInDatabase(database));
 
             // create a replicator to push and pull data to and from the remote endpoint
             replicator = new Replicator(CbHelper.createReplicatorConfiguration(properties, collection));
@@ -72,17 +81,25 @@ public class DemoLite {
             listenerToken = replicator.addChangeListener(change -> {
                 System.out.format("Replicator state: %s%n  |---> Replicator: %s%n  |---> Status: %s%n",
                     change.getStatus().getActivityLevel(), change.getReplicator(), change.getStatus());
+
+                if (change.getStatus().getActivityLevel().equals(ReplicatorActivityLevel.STOPPED)) {
+                    synchronized (MONITOR) {
+                        MONITOR.notify();
+                    }
+
+                }
             });
 
             // Start replication
             replicator.start(false);
 
             // wait for the replication to complete
-            Thread.sleep(30_000);
+            synchronized (MONITOR) {
+                MONITOR.wait();
+            }
 
             // show all airlines in Spain and the United States
-            System.out.println(ModelHelper.printAirlinesInCountry(collection, "Spain"));
-            System.out.println(ModelHelper.printAirlinesInCountry(collection, "United States"));
+            System.out.println(ModelHelper.printStock(collection));
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

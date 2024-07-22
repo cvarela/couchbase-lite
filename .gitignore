@@ -46,3 +46,9 @@ target/surefire-reports/
 
 # tags
 tags
+
+logs/
+
+CouchbaseLiteTemp/
+
+.couchbase-db/
